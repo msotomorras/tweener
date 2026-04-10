@@ -1,5 +1,7 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import MobileTopNav from '$lib/components/MobileTopNav.svelte';
+	import MobileBottomNav from '$lib/components/MobileBottomNav.svelte';
 	import CreateView from '$lib/components/CreateView.svelte';
 	import PlayView from '$lib/components/PlayView.svelte';
 	import ExportModal from '$lib/components/ExportModal.svelte';
@@ -47,6 +49,7 @@
 <div class="app-shell">
 	<Sidebar />
 	<div class="content-column">
+		<MobileTopNav />
 		<main class="main-area">
 			{#if $mainMode === 'CREATE'}
 				<CreateView />
@@ -54,6 +57,7 @@
 				<PlayView />
 			{/if}
 		</main>
+		<MobileBottomNav />
 		<StatusBar />
 	</div>
 </div>
@@ -83,5 +87,11 @@
 		position: relative;
 		overflow: hidden;
 		background: rgb(20, 20, 20);
+	}
+
+	@media (max-width: 767px) {
+		.app-shell {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

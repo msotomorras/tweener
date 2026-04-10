@@ -211,10 +211,7 @@
 			frameCount = 0;
 			addStatusMessage('Recording started (mouse)');
 		} else if (input === 'SOUND') {
-			const newState = createRecordingState();
-			recordingState.set(newState);
-			isRecording.set(true);
-			addStatusMessage('Recording from microphone — release to stop');
+			startSoundRecording();
 		}
 	}
 
@@ -249,17 +246,7 @@
 		isDrawing = false;
 		const recording = get(isRecording);
 		if (recording) {
-			isRecording.set(false);
-			recordingState.update((s) => {
-				remap(s);
-				return s;
-			});
-			const state = get(recordingState);
-			if (state.valid) {
-				addStatusMessage('Recording complete - polynomial fitted');
-			} else {
-				addStatusMessage('Recording invalid - need more data points');
-			}
+			stopSoundRecording();
 		}
 		recordingState.update((s) => {
 			s.selectedId = -1;
@@ -295,6 +282,27 @@
 			});
 		}
 		soundAnimId = requestAnimationFrame(pollSound);
+	}
+
+	function startSoundRecording() {
+		const newState = createRecordingState();
+		recordingState.set(newState);
+		isRecording.set(true);
+		addStatusMessage('Recording from microphone — release to stop');
+	}
+
+	function stopSoundRecording() {
+		isRecording.set(false);
+		recordingState.update((s) => {
+			remap(s);
+			return s;
+		});
+		const state = get(recordingState);
+		if (state.valid) {
+			addStatusMessage('Recording complete - polynomial fitted');
+		} else {
+			addStatusMessage('Recording invalid - need more data points');
+		}
 	}
 
 	function handleKeyDown(e: KeyboardEvent) {
@@ -425,6 +433,22 @@
 			</text>
 		{/if} -->
 	</svg>
+
+	{#if $editInput === 'SOUND' && soundInput.active}
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<button
+			class="mic-record-btn"
+			class:recording={$isRecording}
+			aria-label={$isRecording ? 'Recording — release to stop' : 'Hold to record'}
+			on:touchstart|preventDefault={startSoundRecording}
+			on:touchend|preventDefault={stopSoundRecording}
+			on:mousedown={startSoundRecording}
+			on:mouseup={stopSoundRecording}
+		>
+			<span class="mic-icon">{$isRecording ? '●' : '○'}</span>
+			<span class="mic-label">{$isRecording ? 'RECORDING' : 'HOLD TO RECORD'}</span>
+		</button>
+	{/if}
 </div>
 
 <style>
@@ -432,6 +456,7 @@
 		flex: 1;
 		display: flex;
 		overflow: hidden;
+		position: relative;
 	}
 	.chart {
 		width: 100%;
@@ -469,5 +494,49 @@
 	.recording-text {
 		font: 12px Consolas, monospace;
 		fill: rgba(255, 255, 255, 0.35);
+	}
+
+	.mic-record-btn {
+		display: none;
+	}
+
+	@media (max-width: 767px) {
+		.mic-record-btn {
+			display: flex;
+			position: absolute;
+			top: 12px;
+			right: 12px;
+			align-items: center;
+			gap: 6px;
+			padding: 8px 14px;
+			background: rgba(255, 255, 255, 0.08);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: 6px;
+			cursor: pointer;
+			-webkit-user-select: none;
+			user-select: none;
+			touch-action: none;
+		}
+
+		.mic-record-btn.recording {
+			background: rgba(255, 60, 60, 0.15);
+			border-color: rgba(255, 60, 60, 0.4);
+		}
+
+		.mic-icon {
+			font-size: 14px;
+			color: rgba(255, 255, 255, 0.6);
+		}
+
+		.mic-record-btn.recording .mic-icon {
+			color: rgb(255, 80, 80);
+		}
+
+		.mic-label {
+			font-family: var(--font-mono);
+			font-size: 9px;
+			letter-spacing: 1px;
+			color: rgba(255, 255, 255, 0.5);
+		}
 	}
 </style>

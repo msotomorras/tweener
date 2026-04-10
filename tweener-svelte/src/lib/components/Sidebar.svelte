@@ -155,4 +155,10 @@
 		flex-direction: column;
 		gap: 4px;
 	}
+
+	@media (max-width: 767px) {
+		.sidebar {
+			display: none;
+		}
+	}
 </style>

@@ -26,4 +26,11 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+
+	@media (max-width: 767px) {
+		.status-bar {
+			padding: 8px 16px;
+			max-height: 60px;
+		}
+	}
 </style>
