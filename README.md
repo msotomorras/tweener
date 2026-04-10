@@ -2,7 +2,7 @@
 
 **A tool that turns human gestures into mathematical functions for personalized digital motion.**
 
-<video src="assets/tweener.mov" width="100%" autoplay loop muted></video>
+https://github.com/msotomorras/tweener/blob/main/assets/tweener.mov
 
 ## The idea
 
@@ -12,7 +12,7 @@ Tweener flips this. It captures individual human movement — a mouse drag, a so
 
 > Every digital behavior of the device — from visual appearance, sound to motion and feel — can be affected by those functions, enabling true user-centered design.
 
-## Built in 2016. Reborn in 2026.
+## Built in 2016. Rebuilt in 2026.
 
 Tweener was originally built in 2016 as a Processing sketch.
 
