@@ -22,6 +22,7 @@
 	let soundAnimId: number;
 	let frameCount = 0;
 	let isDrawing = false;
+	let touchPos: { x: number; y: number } | null = null;
 
 	// Responsive dimensions
 	let width = 1280;
@@ -171,6 +172,60 @@
 			mx: Math.max(0, Math.min(1, xScale.invert(pos.x))),
 			my: Math.max(0, Math.min(1, yScale.invert(pos.y)))
 		};
+	}
+
+	function getTouchSvgPos(touch: Touch): { x: number; y: number } {
+		const rect = svgEl.getBoundingClientRect();
+		return {
+			x: ((touch.clientX - rect.left) / rect.width) * width,
+			y: ((touch.clientY - rect.top) / rect.height) * height
+		};
+	}
+
+	// ── Touch handlers ──
+	function handleTouchStart(e: TouchEvent) {
+		if (e.touches.length !== 1) return;
+		const input = get(editInput);
+		if (input !== 'MOUSE') return;
+
+		e.preventDefault();
+		const pos = getTouchSvgPos(e.touches[0]);
+		touchPos = pos;
+		isDrawing = true;
+
+		const newState = createRecordingState();
+		recordingState.set(newState);
+		isRecording.set(true);
+		frameCount = 0;
+		addStatusMessage('Recording started (touch)');
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		if (e.touches.length !== 1) return;
+		const recording = get(isRecording);
+		if (!recording || get(editInput) !== 'MOUSE') return;
+
+		e.preventDefault();
+		const pos = getTouchSvgPos(e.touches[0]);
+		touchPos = pos;
+		frameCount++;
+		if (frameCount > 5) {
+			recordingState.update((s) => {
+				enterNewValue(s, { x: pos.x, y: pos.y, z: 0 });
+				return s;
+			});
+		}
+	}
+
+	function handleTouchEnd(e: TouchEvent) {
+		if (!isDrawing) return;
+		e.preventDefault();
+		isDrawing = false;
+		touchPos = null;
+		const recording = get(isRecording);
+		if (recording) {
+			stopSoundRecording();
+		}
 	}
 
 	// ── Mouse handlers ──
@@ -339,6 +394,9 @@
 		on:mousedown={handleMouseDown}
 		on:mousemove={handleMouseMove}
 		on:mouseup={handleMouseUp}
+		on:touchstart={handleTouchStart}
+		on:touchmove={handleTouchMove}
+		on:touchend={handleTouchEnd}
 	>
 	
 		<!-- X axis labels -->
@@ -432,6 +490,35 @@
 				{/if}
 			</text>
 		{/if} -->
+
+		<!-- Touch drag handle (mobile) -->
+		{#if $editInput === 'MOUSE' && !$recordingState.valid && !$isRecording && !touchPos}
+			<circle
+				cx={width / 2}
+				cy={height / 2}
+				r="20"
+				fill="rgba(255, 255, 255, 0.15)"
+				stroke="rgba(255, 255, 255, 0.4)"
+				stroke-width="1.5"
+				class="touch-handle"
+			/>
+			<text
+				x={width / 2}
+				y={height / 2 + 40}
+				text-anchor="middle"
+				class="touch-hint"
+			>DRAG TO DRAW</text>
+		{/if}
+		{#if touchPos}
+			<circle
+				cx={touchPos.x}
+				cy={touchPos.y}
+				r="16"
+				fill="rgba(255, 255, 255, 0.2)"
+				stroke="rgba(255, 255, 255, 0.6)"
+				stroke-width="1.5"
+			/>
+		{/if}
 	</svg>
 
 	{#if $editInput === 'SOUND' && soundInput.active}
@@ -496,11 +583,27 @@
 		fill: rgba(255, 255, 255, 0.35);
 	}
 
+	.touch-handle,
+	.touch-hint {
+		display: none;
+	}
+
 	.mic-record-btn {
 		display: none;
 	}
 
 	@media (max-width: 767px) {
+		.touch-handle,
+		.touch-hint {
+			display: block;
+		}
+
+		.touch-hint {
+			font: 10px var(--font-mono), Consolas, monospace;
+			fill: rgba(255, 255, 255, 0.3);
+			letter-spacing: 1.5px;
+		}
+
 		.mic-record-btn {
 			display: flex;
 			position: absolute;
