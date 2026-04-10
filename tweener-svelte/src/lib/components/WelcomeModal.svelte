@@ -21,7 +21,7 @@
 	<div class="overlay" on:click|self={dismiss} role="dialog" aria-label="Welcome" aria-modal="true">
 		<div class="modal">
 			<div class="header">
-				<span class="title">NEXTONE110</span>
+				<span class="title">TWEENER</span>
 				<button class="close-btn" on:click={dismiss} aria-label="Close">x</button>
 			</div>
 

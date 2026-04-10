@@ -33,7 +33,7 @@
 			showExport.set(false);
 		}
 		if (e.key === 'i' || e.key === 'I') {
-			addStatusMessage('NextOne110 — Gesture to Polynomial Visualization');
+			addStatusMessage('Tweener — Gesture to Polynomial Visualization');
 		}
 	}
 </script>
