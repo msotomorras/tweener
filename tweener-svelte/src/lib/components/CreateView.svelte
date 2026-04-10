@@ -203,12 +203,18 @@
 			return;
 		}
 
-		if (get(editInput) === 'MOUSE') {
+		const input = get(editInput);
+		if (input === 'MOUSE') {
 			const newState = createRecordingState();
 			recordingState.set(newState);
 			isRecording.set(true);
 			frameCount = 0;
 			addStatusMessage('Recording started (mouse)');
+		} else if (input === 'SOUND') {
+			const newState = createRecordingState();
+			recordingState.set(newState);
+			isRecording.set(true);
+			addStatusMessage('Recording from microphone — release to stop');
 		}
 	}
 
@@ -271,7 +277,7 @@
 	async function startSound() {
 		const ok = await soundInput.start();
 		if (ok) {
-			addStatusMessage('Microphone active');
+			addStatusMessage('Microphone active — click and hold to record');
 			pollSound();
 		} else {
 			addStatusMessage('Microphone access denied');
@@ -400,7 +406,7 @@
 			>{selectedPoint.label}</text>
 		{/if}
 
-		<!-- Helper text -->
+		<!-- Helper text
 		{#if !$recordingState.valid && !$isRecording}
 			<text x={width / 2} y={height / 2} class="helper-text" text-anchor="middle">
 				{#if $editInput === 'MOUSE'}
@@ -417,7 +423,7 @@
 					Recording... press R to stop
 				{/if}
 			</text>
-		{/if}
+		{/if} -->
 	</svg>
 </div>
 
