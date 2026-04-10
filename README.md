@@ -1,8 +1,10 @@
 # Tweener
 
-**A tool that turns human gestures into mathematical functions for personalized digital motion.**
+A tool that turns human gestures into mathematical functions for personalized digital motion.
 
-https://github.com/msotomorras/tweener/blob/main/assets/tweener.mov
+[![Tweener](assets/tweener.png)](https://tweener-gamma.vercel.app/)
+
+**[Try the live demo](https://tweener-gamma.vercel.app/)**
 
 ## The idea
 
@@ -49,4 +51,5 @@ assets/              # Demo media
 
 ## Links
 
+- [Live demo](https://tweener-gamma.vercel.app/)
 - [Project page](https://waltzbinaire.com/projects/tweener/)
